@@ -16,7 +16,7 @@
                     PRICESCOPE <span class="text-primary">PRO</span>
                 </a>
                 <div class="ms-auto">
-                    <a href="login.php" class="btn btn-outline-light btn-sm px-4 rounded-pill">Log In</a>
+                    <a href="login.php" class="btn btn-outline-primary btn-sm px-4 rounded-pill">Log In</a>
                     <a href="register.php" class="btn btn-primary btn-sm px-4 rounded-pill ms-2">Get Started</a>
                 </div>
             </div>
@@ -43,14 +43,14 @@
                                 <a href="register.php" class="btn btn-primary btn-lg px-5 rounded-pill shadow-lg hover-scale">
                                     Start Tracking Free
                                 </a>
-                                <a href="#demo" class="btn btn-outline-light btn-lg px-4 rounded-pill hover-scale">
+                                <a href="#demo" class="btn btn-outline-primary btn-lg px-4 rounded-pill hover-scale">
                                     View Live Demo
                                 </a>
                             </div>
                             <div class="mt-5 d-flex align-items-center gap-4 text-muted small">
-                                <div><span class="text-white fw-bold">10k+</span> Products Tracked</div>
+                                <div><span class="text-dark fw-bold">10k+</span> Products Tracked</div>
                                 <div class="vr"></div>
-                                <div><span class="text-white fw-bold">₹2.5Cr</span> Saved</div>
+                                <div><span class="text-dark fw-bold">₹2.5Cr</span> Saved</div>
                             </div>
                         </div>
                     </div>
