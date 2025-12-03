@@ -37,6 +37,6 @@ ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/php_error.log');
 
 define('GOOGLE_API_KEY', 'AIzaSyDNYKDf5OOlBUSK2I0y7WKiUx6nedtchIY');
-define('GEMINI_API_KEY', 'AIzaSyCyZcpx5mQVIsj_4XURJ_TugqWAQa0w6ps');
+define('GEMINI_API_KEY', 'AIzaSyD3OgPdpmC1XWamRMAGs-RG5VMJuGZ8nvw');
 define('RAPID_API_KEY', '818924e299msh6f9222b802b50cep111d79jsn0f574a5e5647');
 ?>
