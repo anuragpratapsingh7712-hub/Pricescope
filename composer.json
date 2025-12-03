@@ -1,0 +1,9 @@
+{
+    "name": "pricescope/pro",
+    "description": "PriceScope Pro - PHP Price Tracker",
+    "require": {
+        "php": "^8.0",
+        "ext-pdo": "*",
+        "ext-curl": "*"
+    }
+}
