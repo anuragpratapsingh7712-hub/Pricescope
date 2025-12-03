@@ -34,8 +34,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         if ($user && password_verify($password, $user['password_hash'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['name'];
-            $_SESSION['is_admin'] = $user['is_admin'] ?? 0; // Fix: Set Admin Flag
-            session_write_close(); // Ensure session is saved before redirect
+            $_SESSION['is_admin'] = $user['is_admin'] ?? 0;
+            
+            // COOKIE AUTH (For Serverless/Vercel persistence)
+            // Format: ID:HASH
+            $secret = "PriceScope_Secret_Key_99"; 
+            $hash = hash_hmac('sha256', $user['id'], $secret);
+            $cookieValue = $user['id'] . ':' . $hash;
+            setcookie('pricescope_user', $cookieValue, time() + (86400 * 30), "/", "", true, true); // 30 days, Secure, HttpOnly
+            
             header('Location: dashboard.php');
             exit;
         } else {

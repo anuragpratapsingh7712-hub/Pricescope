@@ -1,6 +1,27 @@
 <?php
 function isLoggedIn() {
-    return isset($_SESSION['user_id']);
+    // 1. Check Session
+    if (isset($_SESSION['user_id'])) {
+        return true;
+    }
+
+    // 2. Check Cookie (Serverless Fallback)
+    if (isset($_COOKIE['pricescope_user'])) {
+        $parts = explode(':', $_COOKIE['pricescope_user']);
+        if (count($parts) === 2) {
+            $uid = $parts[0];
+            $hash = $parts[1];
+            $secret = "PriceScope_Secret_Key_99";
+            
+            if (hash_hmac('sha256', $uid, $secret) === $hash) {
+                // Restore Session
+                $_SESSION['user_id'] = $uid;
+                $_SESSION['user_name'] = "User"; // Placeholder, or fetch from DB if needed
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 function requireLogin() {
