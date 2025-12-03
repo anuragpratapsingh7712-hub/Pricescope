@@ -26,6 +26,7 @@ $query = "
     LEFT JOIN vendor_prices vp ON p.id = vp.product_id
     LEFT JOIN vendors v ON vp.vendor_id = v.id
     GROUP BY p.id
+    LIMIT 5
 ";
 $stmt = $pdo->query($query);
 $products = $stmt->fetchAll();
