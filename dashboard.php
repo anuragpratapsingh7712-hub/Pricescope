@@ -78,7 +78,7 @@ $savings = 3500; // Mock
             <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
                 <h5 class="mb-0 fw-bold">Live Market Data</h5>
                 <div class="d-flex gap-2">
-                    <input type="text" class="form-control form-control-sm bg-dark-surface border-dark-subtle" placeholder="Filter tickers..." style="width: 200px;">
+
                     <a href="add_product.php" class="btn btn-primary btn-sm" title="Search Amazon and add new products to track">+ Track Product</a>
                 </div>
             </div>
