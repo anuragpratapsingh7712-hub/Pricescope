@@ -187,3 +187,32 @@ body {
 .gauge-center {
     background: var(--text-primary) !important;
 }
+
+/* --- FAQ Accordion Dark Mode Fix --- */
+.accordion-item {
+    background-color: rgba(30, 41, 59, 0.5);
+    /* Semi-transparent dark */
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.accordion-button {
+    background-color: rgba(30, 41, 59, 0.8);
+    color: var(--text-primary);
+    box-shadow: none !important;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.accordion-button::after {
+    filter: invert(1);
+    /* Make arrow white */
+}
+
+.accordion-body {
+    background-color: transparent;
+    color: var(--text-secondary);
+}

@@ -13,6 +13,10 @@ if (!defined('GEMINI_API_KEY')) {
 }
 
 try {
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
      error_log("DB Connection Error: " . $e->getMessage());
      // Show generic message to user
      die("<h3>Service Temporarily Unavailable</h3><p>We are experiencing technical difficulties. Please try again later.</p>");
