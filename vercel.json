@@ -5,12 +5,6 @@
             "use": "vercel-php@0.7.1"
         }
     ],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "/$1"
-        }
-    ],
     "env": {
         "PHP_INI": "display_errors = Off"
     }
