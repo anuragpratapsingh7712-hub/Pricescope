@@ -141,10 +141,10 @@
             <div class="container text-center">
                 <p class="text-muted small text-uppercase fw-bold mb-4">Trusted Data Sources</p>
                 <div class="d-flex justify-content-center gap-5 opacity-50 grayscale-logos">
-                    <h4 class="text-white fw-bold">amazon</h4>
-                    <h4 class="text-white fw-bold">flipkart</h4>
-                    <h4 class="text-white fw-bold">croma</h4>
-                    <h4 class="text-white fw-bold">myntra</h4>
+                    <h4 class="text-secondary fw-bold">amazon</h4>
+                    <h4 class="text-secondary fw-bold">flipkart</h4>
+                    <h4 class="text-secondary fw-bold">croma</h4>
+                    <h4 class="text-secondary fw-bold">myntra</h4>
                 </div>
             </div>
         </section>
@@ -164,7 +164,7 @@
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">R</div>
                                 <div>
-                                    <div class="fw-bold text-white">Rahul S.</div>
+                                    <div class="fw-bold text-dark">Rahul S.</div>
                                     <div class="small text-muted">Tech Enthusiast</div>
                                 </div>
                             </div>
@@ -177,7 +177,7 @@
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">P</div>
                                 <div>
-                                    <div class="fw-bold text-white">Priya M.</div>
+                                    <div class="fw-bold text-dark">Priya M.</div>
                                     <div class="small text-muted">Day Trader</div>
                                 </div>
                             </div>
@@ -190,7 +190,7 @@
                             <div class="d-flex align-items-center">
                                 <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">A</div>
                                 <div>
-                                    <div class="fw-bold text-white">Arjun K.</div>
+                                    <div class="fw-bold text-dark">Arjun K.</div>
                                     <div class="small text-muted">Developer</div>
                                 </div>
                             </div>
@@ -211,7 +211,7 @@
                         <div class="accordion accordion-flush" id="faqAccordion">
                             <div class="accordion-item bg-transparent border-dark-subtle">
                                 <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed bg-transparent text-white shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    <button class="accordion-button collapsed bg-transparent text-dark shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
                                         How accurate is the AI prediction?
                                     </button>
                                 </h2>
@@ -223,7 +223,7 @@
                             </div>
                             <div class="accordion-item bg-transparent border-dark-subtle">
                                 <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed bg-transparent text-white shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    <button class="accordion-button collapsed bg-transparent text-dark shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
                                         Is it really free?
                                     </button>
                                 </h2>
@@ -235,7 +235,7 @@
                             </div>
                             <div class="accordion-item bg-transparent border-dark-subtle">
                                 <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed bg-transparent text-white shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    <button class="accordion-button collapsed bg-transparent text-dark shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
                                         Which sites do you track?
                                     </button>
                                 </h2>
