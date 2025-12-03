@@ -22,6 +22,11 @@ try {
      die("<h3>Service Temporarily Unavailable</h3><p>We are experiencing technical difficulties. Please try again later.</p>");
 }
 
+// Fix for Vercel/Serverless Sessions (File system is read-only except /tmp)
+if (!is_dir('/tmp')) {
+    mkdir('/tmp');
+}
+session_save_path('/tmp');
 session_start();
 
 // Security: Hide errors from users, log them instead
