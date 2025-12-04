@@ -1,8 +1,28 @@
 <?php
-// Prevent caching
+// Suppress all errors to prevent image corruption
+error_reporting(0);
+ini_set('display_errors', 0);
+
+// Start Output Buffering
+ob_start();
+
+require 'config.php'; // Optional, but good for consistency if needed later
+
+// Clean buffer
+ob_clean();
+
+// Set Headers
+header("Content-Type: image/png");
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
+
+// Check for GD Library
+if (!function_exists('imagecreatetruecolor')) {
+    // Fallback: Create a 1x1 error pixel if GD is missing (or just die)
+    // But ideally we want to see if this runs.
+    die("GD Library Missing");
+}
 
 // Generate Random Code
 $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -13,13 +33,9 @@ for ($i = 0; $i < $length; $i++) {
 }
 
 // Stateless Verification: Store Hash in Cookie
-// Vercel/Serverless doesn't support persistent sessions well for this flow
 $secret = "PriceScope_Secret_Key_99";
 $hash = hash_hmac('sha256', strtoupper($code), $secret);
 
-// Set Cookie (5 minutes expiry, Secure, HttpOnly)
-// Note: In some local dev environments (non-https), 'Secure' might block the cookie. 
-// We'll detect HTTPS.
 $isSecure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
 setcookie('captcha_hash', $hash, time() + 300, '/', '', $isSecure, true);
 
@@ -46,18 +62,20 @@ for($i=0; $i<5; $i++) {
     imageline($image, 0, rand(0,$height), $width, rand(0,$height), $line_color);
 }
 
-// Add Text (Centered)
-// Using built-in font 5 (largest built-in)
-$font_width = imagefontwidth(5);
-$font_height = imagefontheight(5);
+// Add Text
+$font = 5;
+$font_width = imagefontwidth($font);
+$font_height = imagefontheight($font);
 $text_width = $font_width * strlen($code);
 $x = ($width - $text_width) / 2;
 $y = ($height - $font_height) / 2;
 
-imagestring($image, 5, $x, $y, $code, $text_color);
+imagestring($image, $font, $x, $y, $code, $text_color);
 
 // Output
-header('Content-Type: image/png');
 imagepng($image);
 imagedestroy($image);
+
+// Flush buffer
+ob_end_flush();
 ?>
