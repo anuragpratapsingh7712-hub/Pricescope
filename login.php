@@ -14,7 +14,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         die("Spam detected.");
     }
 
-    if (empty($_SESSION['login_captcha']) || $captcha !== $_SESSION['login_captcha']) {
+    // COOKIE-BASED CAPTCHA VERIFICATION
+    $secret = "PriceScope_Secret_Key_99";
+    $inputHash = hash_hmac('sha256', $captcha, $secret);
+    $cookieHash = $_COOKIE['captcha_hash'] ?? '';
+
+    if (empty($cookieHash) || !hash_equals($cookieHash, $inputHash)) {
         $login_error = "Incorrect CAPTCHA code.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || !$password) {
         $login_error = "Please enter valid email and password.";
@@ -28,13 +33,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $_SESSION['is_admin'] = $user['is_admin'] ?? 0;
             
             // COOKIE AUTH (For Serverless/Vercel persistence)
-            $secret = "PriceScope_Secret_Key_99"; 
-            $hash = hash_hmac('sha256', $user['id'], $secret);
-            $cookieValue = $user['id'] . ':' . $hash;
+            $authHash = hash_hmac('sha256', $user['id'], $secret);
+            $cookieValue = $user['id'] . ':' . $authHash;
             setcookie('pricescope_user', $cookieValue, time() + (86400 * 30), "/", "", true, true); // 30 days, Secure, HttpOnly
             
-            // Clear captcha
-            unset($_SESSION['login_captcha']);
+            // Clear captcha cookie
+            setcookie('captcha_hash', '', time() - 3600, '/');
 
             header('Location: dashboard.php');
             exit;
@@ -126,8 +130,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 </div>
                 <div class="flex gap-2">
                     <input type="text" name="captcha" placeholder="ENTER CODE" class="flex-1 bg-slate-900/50 border border-slate-700 rounded-lg p-2 outline-none focus:border-cyan-400 text-white text-center tracking-widest uppercase placeholder-slate-600" required>
-                    <div class="h-10 rounded-lg overflow-hidden border border-slate-700">
-                        <img src="captcha.php" alt="CAPTCHA" class="h-full object-cover">
+                    <div class="h-10 rounded-lg overflow-hidden border border-slate-700 bg-slate-900 relative group">
+                        <!-- Added timestamp to prevent caching -->
+                        <img src="captcha.php?t=<?= time() ?>" alt="CAPTCHA" class="h-full object-cover w-full">
+                        <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onclick="this.previousElementSibling.src='captcha.php?t='+Date.now()">
+                            <span class="text-[10px] text-white font-bold">REFRESH</span>
+                        </div>
                     </div>
                 </div>
             </div>
