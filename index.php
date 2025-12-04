@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- PriceScope Pro v1.2 - Deployment Trigger -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
