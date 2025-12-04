@@ -2,25 +2,25 @@
 require_once 'config.php';
 
 $login_error = '';
+$secret = "PriceScope_Secret_Key_99";
 
-// LOGIN
+// LOGIN LOGIC
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
-    $captcha = strtoupper(trim($_POST['captcha'] ?? '')); // Case-insensitive
+    $captcha = trim($_POST['captcha'] ?? '');
 
-    // HONEYPOT CHECK (Anti-Bot)
+    // HONEYPOT
     if (!empty($_POST['website'])) {
         die("Spam detected.");
     }
 
-    // COOKIE-BASED CAPTCHA VERIFICATION
-    $secret = "PriceScope_Secret_Key_99";
+    // CAPTCHA VERIFICATION
     $inputHash = hash_hmac('sha256', $captcha, $secret);
     $cookieHash = $_COOKIE['captcha_hash'] ?? '';
 
     if (empty($cookieHash) || !hash_equals($cookieHash, $inputHash)) {
-        $login_error = "Incorrect CAPTCHA code.";
+        $login_error = "Incorrect Security Answer.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || !$password) {
         $login_error = "Please enter valid email and password.";
     } else {
@@ -32,12 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $_SESSION['user_name'] = $user['name'];
             $_SESSION['is_admin'] = $user['is_admin'] ?? 0;
             
-            // COOKIE AUTH (For Serverless/Vercel persistence)
+            // COOKIE AUTH
             $authHash = hash_hmac('sha256', $user['id'], $secret);
             $cookieValue = $user['id'] . ':' . $authHash;
-            setcookie('pricescope_user', $cookieValue, time() + (86400 * 30), "/", "", true, true); // 30 days, Secure, HttpOnly
+            setcookie('pricescope_user', $cookieValue, time() + (86400 * 30), "/", "", true, true);
             
-            // Clear captcha cookie
+            // Clear captcha
             setcookie('captcha_hash', '', time() - 3600, '/');
 
             header('Location: dashboard.php');
@@ -47,6 +47,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
     }
 }
+
+// GENERATE NEW MATH CAPTCHA (Runs on every page load/render)
+$n1 = rand(1, 9);
+$n2 = rand(1, 9);
+$ans = $n1 + $n2;
+$newHash = hash_hmac('sha256', (string)$ans, $secret);
+$isSecure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
+setcookie('captcha_hash', $newHash, time() + 300, '/', '', $isSecure, true);
+
 ?>
 <!DOCTYPE html>
 <html lang="en" class="dark">
@@ -122,21 +131,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <input type="password" name="password" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-4 outline-none focus:border-cyan-400 transition-colors text-white placeholder-slate-600" placeholder="••••••••" required>
             </div>
 
-            <!-- Functional Captcha Integration -->
+            <!-- Simple Math Captcha -->
             <div class="bg-slate-800/50 rounded-xl p-3 border border-white/5">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider">Security Check</span>
                     <img src="mascot.jpg" class="w-5 h-5 rounded-full opacity-50 grayscale" title="Blu is watching!">
                 </div>
-                <div class="flex gap-2">
-                    <input type="text" name="captcha" placeholder="ENTER CODE" class="flex-1 bg-slate-900/50 border border-slate-700 rounded-lg p-2 outline-none focus:border-cyan-400 text-white text-center tracking-widest uppercase placeholder-slate-600" required>
-                    <div class="h-10 rounded-lg overflow-hidden border border-slate-700 bg-slate-900 relative group">
-                        <!-- Added timestamp to prevent caching -->
-                        <img src="captcha.php?t=<?= time() ?>" alt="CAPTCHA" class="h-full object-cover w-full">
-                        <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onclick="this.previousElementSibling.src='captcha.php?t='+Date.now()">
-                            <span class="text-[10px] text-white font-bold">REFRESH</span>
-                        </div>
+                <div class="flex gap-2 items-center">
+                    <div class="h-12 flex-1 rounded-lg border border-slate-700 bg-slate-900 flex items-center justify-center text-xl font-bold font-mono text-cyan-400 tracking-widest select-none">
+                        <?= $n1 ?> + <?= $n2 ?> = ?
                     </div>
+                    <input type="number" name="captcha" placeholder="ANSWER" class="w-24 bg-slate-900/50 border border-slate-700 rounded-lg p-3 outline-none focus:border-cyan-400 text-white text-center font-bold placeholder-slate-600" required>
                 </div>
             </div>
 
