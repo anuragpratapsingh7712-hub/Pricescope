@@ -35,147 +35,84 @@ $products = $stmt->fetchAll();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PriceScope - Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Dashboard - PriceScope Pro</title>
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
     <?php include 'navbar.php'; ?>
 
-    <div class="container-fluid px-4">
-        <!-- Top Summary Row -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-3">
-                <div class="card p-3 h-100 d-flex flex-row align-items-center justify-content-between">
-                    <div>
-                        <div class="text-muted small text-uppercase fw-bold">Total Market Value</div>
-                        <div class="h3 mb-0 fw-bold">₹<?= number_format($savings * 12) ?></div>
-                    </div>
-                    <div class="text-success bg-success bg-opacity-10 p-2 rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-                    </div>
-                </div>
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div class="glass-card" style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px; padding: 20px; border-left: 4px solid var(--neon-cyan);">
+            <div style="font-size: 40px;">🐧</div>
+            <span><strong>Blu's Insight:</strong> Tech stocks are dipping. It's a buyer's market for headphones today.</span>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="hud-card positive">
+                <div class="label" style="color: #94a3b8; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px;">Total Value</div>
+                <div class="hud-value">₹<?= number_format($savings * 12) ?></div>
+                <div style="color: var(--neon-green);">▲ 2.4%</div>
             </div>
-            <div class="col-md-3">
-                <div class="card p-3 h-100 d-flex flex-row align-items-center justify-content-between">
-                    <div>
-                        <div class="text-muted small text-uppercase fw-bold">Top Gainer</div>
-                        <div class="h4 mb-0 fw-bold text-success">Sony WH-1000XM5</div>
-                        <div class="small text-success">+4.2%</div>
-                    </div>
-                </div>
+            <div class="hud-card negative">
+                <div class="label" style="color: #94a3b8; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px;">Top Loser</div>
+                <div class="hud-value">iPhone 15</div>
+                <div style="color: var(--neon-red);">▼ 2.1%</div>
             </div>
-            <div class="col-md-3">
-                <div class="card p-3 h-100 d-flex flex-row align-items-center justify-content-between">
-                    <div>
-                        <div class="text-muted small text-uppercase fw-bold">Top Loser</div>
-                        <div class="h4 mb-0 fw-bold text-danger">iPhone 15</div>
-                        <div class="small text-danger">-2.1%</div>
-                    </div>
-                </div>
-            </div>
-            <!-- Mascot Insight Card -->
-            <div class="col-md-3">
-                <div class="card p-3 h-100 border-primary bg-primary bg-opacity-10">
-                    <div class="d-flex align-items-center">
-                        <div class="me-3" style="font-size: 2.5rem;">🐧</div>
-                        <div>
-                            <div class="text-primary small text-uppercase fw-bold">Blu's Insight</div>
-                            <div class="small fw-bold">"Market is volatile today. Watch for dips in Tech sector."</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="hud-card">
+                <div class="label" style="color: #94a3b8; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px;">Items Tracked</div>
+                <div class="hud-value"><?= $totalItems ?></div>
             </div>
         </div>
 
-        <!-- Product Price Comparison Table -->
-        <div class="card overflow-hidden mb-4">
-            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
-                <h5 class="mb-0 fw-bold">Product Price Comparison</h5>
-                <div class="d-flex gap-2">
-                    <a href="add_product.php" class="btn btn-primary btn-sm" title="Search Amazon and add new products to track">+ Track Product</a>
-                </div>
+        <div class="glass-card" style="padding: 0;">
+            <div style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;">Live Market Watch</h3>
+                <a href="add_product.php" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.8em;">+ Track Product</a>
             </div>
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="bg-dark-surface">
-                        <tr>
-                            <th class="ps-4 text-secondary text-uppercase small">Product</th>
-                            <th class="text-end text-secondary text-uppercase small">Amazon</th>
-                            <th class="text-end text-secondary text-uppercase small">Flipkart</th>
-                            <th class="text-end text-secondary text-uppercase small">Croma</th>
-                            <th class="text-end text-secondary text-uppercase small">Best Price</th>
-                            <th class="text-end pe-4 text-secondary text-uppercase small">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($products as $p): 
-                            $prices = array_filter([
-                                'Amazon' => $p['amazon_price'], 
-                                'Flipkart' => $p['flipkart_price'], 
-                                'Croma' => $p['croma_price']
-                            ]);
-                            $minPrice = !empty($prices) ? min($prices) : 0;
-                        ?>
-                        <tr>
-                            <td class="ps-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="rounded bg-white p-1 me-3 d-flex align-items-center justify-content-center border" style="width: 48px; height: 48px;">
-                                        <img src="<?= h($p['image_url']) ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold text-dark"><?= h($p['name']) ?></div>
-                                        <div class="small text-muted font-monospace"><?= h($p['asin']) ?></div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-end font-monospace">
-                                <?php if ($p['amazon_price']): ?>
-                                    <span class="<?= $p['amazon_price'] == $minPrice ? 'text-success fw-bold' : 'text-muted' ?>">
-                                        ₹<?= number_format($p['amazon_price']) ?>
-                                    </span>
-                                <?php else: ?>
-                                    <span class="text-muted small">-</span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="text-end font-monospace">
-                                <?php if ($p['flipkart_price']): ?>
-                                    <span class="<?= $p['flipkart_price'] == $minPrice ? 'text-success fw-bold' : 'text-muted' ?>">
-                                        ₹<?= number_format($p['flipkart_price']) ?>
-                                    </span>
-                                <?php else: ?>
-                                    <span class="text-muted small">-</span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="text-end font-monospace">
-                                <?php if ($p['croma_price']): ?>
-                                    <span class="<?= $p['croma_price'] == $minPrice ? 'text-success fw-bold' : 'text-muted' ?>">
-                                        ₹<?= number_format($p['croma_price']) ?>
-                                    </span>
-                                <?php else: ?>
-                                    <span class="text-muted small">-</span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="text-end font-monospace fw-bold text-dark">
-                                ₹<?= number_format($minPrice) ?>
-                            </td>
-                            <td class="text-end pe-4">
-                                <a href="product.php?id=<?= $p['id'] ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                    View Details
-                                </a>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                        <?php if (empty($products)): ?>
-                        <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">
-                                No products tracked yet. <a href="add_product.php">Add your first product</a>.
-                            </td>
-                        </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+            <table class="data-table">
+                <tr>
+                    <th>PRODUCT</th>
+                    <th>AMAZON</th>
+                    <th>FLIPKART</th>
+                    <th>CROMA</th>
+                    <th>BEST PRICE</th>
+                    <th>ACTION</th>
+                </tr>
+                <?php foreach ($products as $p): 
+                    $prices = array_filter([
+                        'Amazon' => $p['amazon_price'], 
+                        'Flipkart' => $p['flipkart_price'], 
+                        'Croma' => $p['croma_price']
+                    ]);
+                    $minPrice = !empty($prices) ? min($prices) : 0;
+                ?>
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="<?= htmlspecialchars($p['image_url']) ?>" style="width: 40px; height: 40px; object-fit: contain; background: white; padding: 2px; border-radius: 4px;">
+                            <div>
+                                <div style="font-weight: bold;"><?= htmlspecialchars($p['name']) ?></div>
+                                <div style="font-size: 0.8em; color: var(--text-muted);"><?= htmlspecialchars($p['asin']) ?></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><?= $p['amazon_price'] ? '₹'.number_format($p['amazon_price']) : '-' ?></td>
+                    <td><?= $p['flipkart_price'] ? '₹'.number_format($p['flipkart_price']) : '-' ?></td>
+                    <td><?= $p['croma_price'] ? '₹'.number_format($p['croma_price']) : '-' ?></td>
+                    <td style="color: var(--neon-cyan); font-weight: bold;">₹<?= number_format($minPrice) ?></td>
+                    <td>
+                        <a href="product.php?id=<?= $p['id'] ?>" class="btn btn-outline" style="padding: 5px 15px; font-size: 0.8em;">View</a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+                <?php if (empty($products)): ?>
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        No products tracked yet. <a href="add_product.php" style="color: var(--neon-cyan);">Add your first product</a>.
+                    </td>
+                </tr>
+                <?php endif; ?>
+            </table>
         </div>
     </div>
 </body>

@@ -7,113 +7,96 @@ requireLogin();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PriceScope - Chat with Blu</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>AI Analyst - PriceScope Pro</title>
     <link href="style.css" rel="stylesheet">
-    <style>
-        .chat-box {
-            height: 400px;
-            overflow-y: auto;
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            border: 1px solid #dee2e6;
-        }
-        .message {
-            margin-bottom: 15px;
-            max-width: 80%;
-            padding: 10px 15px;
-            border-radius: 15px;
-        }
-        .message.user {
-            background: #4DA8DA;
-            color: white;
-            margin-left: auto;
-            border-bottom-right-radius: 2px;
-        }
-        .message.bot {
-            background: #e9ecef;
-            color: #333;
-            margin-right: auto;
-            border-bottom-left-radius: 2px;
-        }
-    </style>
 </head>
 <body>
     <?php include 'navbar.php'; ?>
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white d-flex align-items-center">
-                        <span class="blu-mascot me-2" style="font-size: 1.5rem;">🐧</span>
-                        <h5 class="mb-0">Chat with Blu (AI Assistant)</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="chat-box" class="chat-box mb-3">
-                            <div class="message bot">
-                                Hello! I'm Blu. I have access to your product database. Ask me anything about prices or products! 🛍️
-                            </div>
-                        </div>
-                        
-                        <form id="chat-form" class="d-flex gap-2">
-                            <input type="text" id="user-input" class="form-control" placeholder="Ask about prices, comparisons..." required>
-                            <button type="submit" class="btn btn-primary">Send</button>
-                        </form>
-                    </div>
-                </div>
+    <div class="chat-console">
+        <div style="background: rgba(0, 242, 255, 0.1); padding: 15px; border-bottom: 1px solid var(--neon-cyan); font-family: monospace; display: flex; justify-content: space-between; align-items: center;">
+            <span>/// BLU_AI_SYSTEM_ONLINE_V2.0</span>
+            <span style="font-size: 20px;">🐧</span>
+        </div>
+        
+        <div class="chat-history" id="chat-box">
+            <div class="msg ai">
+                <div class="penguin-circle" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(0,0,0,0.5);">🐧</div>
+                <div class="chat-bubble">Systems nominal. I am scanning the marketplaces. What product shall we analyze?</div>
             </div>
+        </div>
+        
+        <div style="padding: 20px; border-top: 1px solid #334155; display: flex; gap: 10px; background: rgba(0,0,0,0.2);">
+            <input type="text" id="user-input" placeholder="Enter command..." onkeypress="handleEnter(event)">
+            <button onclick="sendMessage()" class="btn btn-primary" style="padding: 0 25px;">SEND</button>
         </div>
     </div>
 
     <script>
         const chatBox = document.getElementById('chat-box');
-        const chatForm = document.getElementById('chat-form');
         const userInput = document.getElementById('user-input');
 
-        function appendMessage(text, sender) {
-            const div = document.createElement('div');
-            div.className = `message ${sender}`;
-            div.textContent = text;
-            chatBox.appendChild(div);
-            chatBox.scrollTop = chatBox.scrollHeight;
+        function handleEnter(e) {
+            if (e.key === 'Enter') sendMessage();
         }
 
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const message = userInput.value.trim();
-            if (!message) return;
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
 
-            appendMessage(message, 'user');
+            // Add User Message
+            addMessage(text, 'user');
             userInput.value = '';
 
-            // Show loading
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message bot text-muted';
-            loadingDiv.textContent = 'Thinking...';
-            chatBox.appendChild(loadingDiv);
+            // Loading Indicator
+            const loadingId = addMessage('Analyzing market data...', 'ai', true);
 
             try {
                 const response = await fetch('api_chat.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message })
+                    body: JSON.stringify({ message: text })
                 });
+                
                 const data = await response.json();
                 
-                chatBox.removeChild(loadingDiv);
-                
+                // Remove Loading
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) loadingEl.remove();
+
                 if (data.reply) {
-                    appendMessage(data.reply, 'bot');
+                    addMessage(data.reply, 'ai');
                 } else {
-                    appendMessage("Error: " + (data.error || "Unknown error"), 'bot');
+                    addMessage("Error: " + (data.error || "Unknown error"), 'ai');
                 }
             } catch (err) {
-                chatBox.removeChild(loadingDiv);
-                appendMessage("Network Error", 'bot');
+                addMessage("Connection Error. Please try again.", 'ai');
             }
-        });
+        }
+
+        function addMessage(text, sender, isLoading = false) {
+            const div = document.createElement('div');
+            div.className = `msg ${sender}`;
+            if (isLoading) div.id = 'loading-' + Date.now();
+            
+            let avatar = '';
+            if (sender === 'ai') {
+                avatar = `<div class="penguin-circle" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(0,0,0,0.5);">🐧</div>`;
+            }
+
+            // Format Markdown-like bolding
+            let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formattedText = formattedText.replace(/\n/g, '<br>');
+
+            div.innerHTML = `
+                ${avatar}
+                <div class="chat-bubble">${formattedText}</div>
+            `;
+            
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return div.id;
+        }
     </script>
 </body>
 </html>
