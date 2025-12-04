@@ -54,54 +54,106 @@ $items = $stmt->fetchAll();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Watchlist - PriceScope Pro</title>
-    <link href="style.css" rel="stylesheet">
+    <title>PriceScope Pro - Watchlist</title>
+    <style>
+        /* Base Variables & Overrides for this Page */
+        :root { --bg: #020617; --neon-cyan: #00f2ff; --neon-green: #10b981; --neon-red: #ef4444; }
+
+        /* Global & Body Styles */
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; padding: 40px; margin: 0; }
+        
+        /* Header */
+        h1 { border-bottom: 1px solid #334155; padding-bottom: 20px; color: var(--neon-cyan); font-weight: 200; letter-spacing: 2px; }
+        
+        /* Empty State Styles */
+        .empty-state {
+            text-align: center; margin-top: 100px; padding: 50px;
+            background: rgba(255,255,255,0.02); border-radius: 20px;
+            border: 1px dashed #334155;
+        }
+        .empty-state img { 
+            width: 120px; opacity: 0.8; margin-bottom: 20px; border-radius: 50%; 
+            box-shadow: 0 0 20px rgba(0,242,255,0.2); 
+        }
+        h3 { font-size: 1.5em; margin-bottom: 10px; }
+        p { color: #94a3b8; }
+        
+        /* Grid Layout */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 30px; }
+        
+        /* Card Styles */
+        .card {
+            background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;
+            overflow: hidden; transition: 0.3s; position: relative;
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--neon-cyan); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .card-img { height: 200px; background: white; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .card-img img { max-height: 100%; max-width: 100%; object-fit: contain; }
+        
+        .card-body { padding: 20px; }
+        .card-title { font-weight: bold; margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-price { font-size: 1.5em; font-weight: bold; color: var(--neon-cyan); margin-bottom: 5px; }
+        .card-target { color: #94a3b8; font-size: 0.9em; margin-bottom: 15px; }
+        
+        .actions { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 10px; border: 1px solid #334155; background: transparent; color: white; border-radius: 5px; cursor: pointer; text-align: center; text-decoration: none; font-size: 0.9em; }
+        .btn:hover { background: rgba(255,255,255,0.1); }
+        .btn-del { border-color: var(--neon-red); color: var(--neon-red); flex: 0; padding: 10px 15px; }
+        .btn-del:hover { background: var(--neon-red); color: white; }
+        
+        .alert-badge {
+            position: absolute; top: 10px; right: 10px; background: var(--neon-green); color: black;
+            padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 0.8em;
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+    </style>
 </head>
 <body>
     <?php include 'navbar.php'; ?>
 
-    <div style="padding: 40px; max-width: 1000px; margin: 0 auto;">
-        <h1 style="border-bottom: 1px solid #334155; padding-bottom: 20px; color: var(--neon-cyan); font-weight: 200;">WATCHLIST</h1>
-        
-        <?php if (empty($items)): ?>
-            <div style="text-align: center; margin-top: 100px; padding: 50px; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed #334155;">
-                <div style="font-size: 80px; margin-bottom: 20px;">🐧</div>
-                <h3 style="font-size: 1.5em; margin-bottom: 10px;">The Vault is Empty</h3>
-                <p style="color: #94a3b8;">Blu is waiting for your first signal command.</p>
-                <a href="add_product.php" class="btn btn-primary" style="margin-top: 20px;">Add Asset</a>
-            </div>
-        <?php else: ?>
-            <div class="dashboard-grid">
-                <?php foreach ($items as $item): ?>
-                    <div class="glass-card" style="padding: 0; display: flex; flex-direction: column;">
-                        <div style="height: 200px; background: white; padding: 20px; display: flex; align-items: center; justify-content: center;">
-                            <img src="<?= htmlspecialchars($item['image_url']) ?>" style="max-height: 100%; max-width: 100%;">
-                        </div>
-                        <div style="padding: 20px; flex: 1; display: flex; flex-direction: column;">
-                            <h4 style="margin: 0 0 10px 0; font-size: 1.1em;"><?= htmlspecialchars($item['product_name']) ?></h4>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                                <span style="font-size: 1.5em; font-weight: bold; color: var(--neon-cyan);">₹<?= number_format($item['current_price']) ?></span>
-                                <?php if ($item['alert_triggered']): ?>
-                                    <span style="background: var(--neon-green); color: black; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold;">ALERT</span>
-                                <?php endif; ?>
-                            </div>
-                            
+    <h1>WATCHLIST</h1>
+    
+    <?php if (empty($items)): ?>
+        <div class="empty-state">
+            <img src="mascot.jpg" alt="Sleeping Penguin">
+            <h3>The Vault is Empty</h3>
+            <p>Blu is waiting for your first signal command.</p>
+            <a href="add_product.php" style="display: inline-block; margin-top: 20px; color: var(--neon-cyan); text-decoration: none; border: 1px solid var(--neon-cyan); padding: 10px 20px; border-radius: 5px;">Add Asset</a>
+        </div>
+    <?php else: ?>
+        <div class="grid">
+            <?php foreach ($items as $item): ?>
+                <div class="card">
+                    <?php if ($item['alert_triggered']): ?>
+                        <div class="alert-badge">TARGET HIT</div>
+                    <?php endif; ?>
+                    
+                    <div class="card-img">
+                        <img src="<?= htmlspecialchars($item['image_url']) ?>" alt="Product">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title"><?= htmlspecialchars($item['product_name']) ?></div>
+                        <div class="card-price">₹<?= number_format($item['current_price']) ?></div>
+                        <div class="card-target">
                             <?php if ($item['target_price']): ?>
-                                <div style="font-size: 0.9em; color: var(--text-muted); margin-bottom: 15px;">Target: ₹<?= number_format($item['target_price']) ?></div>
+                                Target: ₹<?= number_format($item['target_price']) ?>
+                            <?php else: ?>
+                                No Target Set
                             <?php endif; ?>
-
-                            <div style="margin-top: auto; display: flex; gap: 10px;">
-                                <a href="product.php?id=<?= $item['product_id'] ?>" class="btn btn-outline" style="flex: 1; text-align: center; padding: 10px;">View</a>
-                                <form method="POST" onsubmit="return confirm('Remove from watchlist?');">
-                                    <input type="hidden" name="delete_id" value="<?= $item['id'] ?>">
-                                    <button class="btn btn-outline" style="border-color: var(--neon-red); color: var(--neon-red); padding: 10px;">✕</button>
-                                </form>
-                            </div>
+                        </div>
+                        
+                        <div class="actions">
+                            <a href="product.php?id=<?= $item['product_id'] ?>" class="btn">Analytics</a>
+                            <form method="POST" onsubmit="return confirm('Remove from watchlist?');" style="margin:0;">
+                                <input type="hidden" name="delete_id" value="<?= $item['id'] ?>">
+                                <button class="btn btn-del">✕</button>
+                            </form>
                         </div>
                     </div>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 </body>
 </html>

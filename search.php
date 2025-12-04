@@ -67,7 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Perform Search (Mock or Real)
+    // Perform Search (Redirect to add_product.php or show mock results)
+    // For this standalone page, we'll show mock results as per previous logic, 
+    // but ideally this should link to the tracking system.
     if ($query) {
         // Mock Results for Demo
         $results = [
@@ -81,12 +83,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Search - PriceScope Pro</title>
-    <link href="style.css" rel="stylesheet">
+    <title>PriceScope Pro - Search Terminal</title>
+    <style>
+        /* Base Variables & Overrides for this Page */
+        :root { --bg: #020617; --neon-cyan: #00f2ff; }
+
+        /* Global & Body Styles */
+        body { 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 0;
+        }
+        
+        /* Search Container (Glass Card variant) */
+        .search-container {
+            width: 600px; padding: 40px; border-radius: 30px;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.1);
+            backdrop-filter: blur(20px);
+            text-align: center;
+        }
+        
+        /* Search Bar Group */
+        .search-bar {
+            display: flex; margin-top: 20px; border-radius: 50px; overflow: hidden; 
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+        }
+        input { 
+            flex: 1; padding: 20px; background: transparent; border: none; 
+            color: white; font-size: 1.1em; outline: none; 
+        }
+        button { 
+            padding: 0 30px; background: var(--neon-cyan); border: none; font-weight: bold; 
+            cursor: pointer; transition: 0.3s; 
+        }
+        button:hover { background: white; box-shadow: 0 0 20px white; }
+        h1 { font-weight: 200; letter-spacing: 2px; }
+        
+        /* OCR Toggle */
+        .ocr-toggle { 
+            margin-bottom: 20px; display: inline-flex; background: rgba(0,0,0,0.3); 
+            padding: 5px; border-radius: 20px; 
+        }
+        .toggle-opt { padding: 8px 20px; border-radius: 15px; cursor: pointer; font-size: 0.9em; transition: 0.3s; }
+        .active { background: rgba(255,255,255,0.1); color: var(--neon-cyan); }
+
+        /* Results Grid */
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+        .result-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: left; }
+        .result-card img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
+    </style>
     <script>
         function toggleSearchMode(mode) {
-            const textInput = document.getElementById('text-input');
-            const imgInput = document.getElementById('img-input');
+            const textInput = document.getElementById('text-input-container');
+            const imgInput = document.getElementById('img-input-container');
             const opts = document.querySelectorAll('.toggle-opt');
             
             opts.forEach(o => o.classList.remove('active'));
@@ -102,57 +160,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     </script>
-    <style>
-        .active { background: rgba(255,255,255,0.1); color: var(--neon-cyan); }
-        .toggle-opt { padding: 8px 20px; border-radius: 15px; cursor: pointer; font-size: 0.9em; transition: 0.3s; }
-    </style>
 </head>
 <body>
-    <?php include 'navbar.php'; ?>
-
-    <div class="search-wrapper">
-        <div class="search-container">
-            <h1 style="font-weight: 200; letter-spacing: 2px;">FIND <span style="color: var(--neon-cyan);">PRODUCT</span></h1>
-            
-            <div style="margin-bottom: 20px; display: inline-flex; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 20px;">
-                <span class="toggle-opt active" onclick="toggleSearchMode('text')">Text Search</span>
-                <span class="toggle-opt" onclick="toggleSearchMode('image')">Image OCR</span>
-            </div>
-
-            <?php if ($ocrMsg): ?>
-                <div style="margin-bottom: 20px; color: var(--neon-green);"><?= $ocrMsg ?></div>
-            <?php endif; ?>
-
-            <form method="POST" enctype="multipart/form-data">
-                <div class="search-bar-group">
-                    <div id="text-input" style="flex: 1;">
-                        <input type="text" name="query" placeholder="Paste URL or type product name..." value="<?= htmlspecialchars($query ?? '') ?>">
-                    </div>
-                    <div id="img-input" style="flex: 1; display: none; padding: 10px;">
-                        <input type="file" name="image" accept="image/*" style="border: none;">
-                    </div>
-                    <button type="submit" class="search-btn">SEARCH</button>
-                </div>
-            </form>
-
-            <?php if (!empty($results)): ?>
-                <div style="margin-top: 50px; text-align: left;">
-                    <h3 style="color: var(--text-muted);">RESULTS</h3>
-                    <div class="dashboard-grid">
-                        <?php foreach ($results as $r): ?>
-                        <div class="glass-card" style="padding: 20px;">
-                            <div style="height: 150px; background: white; border-radius: 10px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center;">
-                                <img src="<?= $r['image'] ?>" style="max-height: 100%;">
-                            </div>
-                            <h4 style="margin: 0 0 10px 0;"><?= htmlspecialchars($r['name']) ?></h4>
-                            <div style="color: var(--neon-cyan); font-weight: bold; font-size: 1.2em;">₹<?= number_format($r['price']) ?></div>
-                            <button class="btn btn-outline" style="width: 100%; margin-top: 15px;">Track This</button>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            <?php endif; ?>
+    <div class="search-container">
+        <h1>FIND <span style="color: #00f2ff;">PRODUCT</span></h1>
+        
+        <div class="ocr-toggle">
+            <span class="toggle-opt active" onclick="toggleSearchMode('text')">Text Search</span>
+            <span class="toggle-opt" onclick="toggleSearchMode('image')">Image OCR</span>
         </div>
+
+        <?php if ($ocrMsg): ?>
+            <div style="margin-bottom: 15px; color: var(--neon-cyan); font-size: 0.9em;"><?= $ocrMsg ?></div>
+        <?php endif; ?>
+
+        <form method="POST" enctype="multipart/form-data">
+            <div class="search-bar">
+                <div id="text-input-container" style="flex: 1;">
+                    <input type="text" name="query" placeholder="Paste URL or type product name..." value="<?= htmlspecialchars($query ?? '') ?>">
+                </div>
+                <div id="img-input-container" style="flex: 1; display: none;">
+                    <input type="file" name="image" accept="image/*" style="padding: 15px; color: #94a3b8;">
+                </div>
+                <button type="submit">SEARCH</button>
+            </div>
+        </form>
+
+        <?php if (!empty($results)): ?>
+            <div class="results-grid">
+                <?php foreach ($results as $r): ?>
+                <div class="result-card">
+                    <img src="<?= $r['image'] ?>" alt="Product">
+                    <h4 style="margin: 0 0 5px 0; font-size: 0.9em;"><?= htmlspecialchars($r['name']) ?></h4>
+                    <div style="color: var(--neon-cyan); font-weight: bold;">₹<?= number_format($r['price']) ?></div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
     </div>
 </body>
 </html>
