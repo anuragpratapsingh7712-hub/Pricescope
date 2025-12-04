@@ -57,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         try {
             // 1. Insert Product (Ignore if exists, but we need ID)
-            // Check if exists first to avoid duplicate errors on unique keys if any
             $stmt = $pdo->prepare("SELECT id FROM products WHERE asin = ?");
             $stmt->execute([$asin]);
             $existing = $stmt->fetch();
@@ -83,11 +82,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // 2. Add to Watchlist (with Target Price)
-            // Use INSERT IGNORE or ON DUPLICATE KEY UPDATE to prevent errors
             $stmt = $pdo->prepare("INSERT INTO watchlist (user_id, product_id, target_price) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE target_price = VALUES(target_price)");
             $stmt->execute([$_SESSION['user_id'], $pid, $target_price]);
 
-            $message = "✅ Added to Catalog & Watchlist: " . htmlspecialchars($name);
+            // REDIRECT TO PRODUCT PAGE
+            header("Location: product.php?id=$pid");
+            exit;
+
         } catch (PDOException $e) {
             $message = "Error: " . $e->getMessage();
         }
