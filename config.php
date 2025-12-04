@@ -8,9 +8,8 @@ $pass = getenv('DB_PASS') ?: 'root';
 $port = getenv('DB_PORT') ?: 8889; // MAMP default is 8889, Cloud usually 3306
 
 // Gemini API Key (Set this in your Cloud Dashboard too!)
-if (!defined('GEMINI_API_KEY')) {
-    define('GEMINI_API_KEY', getenv('GEMINI_API_KEY') ?: 'YOUR_LOCAL_API_KEY_HERE');
-}
+// API Key definitions moved to bottom of file
+
 
 try {
     $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $user, $pass);
@@ -36,7 +35,9 @@ error_reporting(E_ALL);
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/php_error.log');
 
+// API Keys
 define('GOOGLE_API_KEY', 'AIzaSyDNYKDf5OOlBUSK2I0y7WKiUx6nedtchIY');
-define('GEMINI_API_KEY', 'AIzaSyD3OgPdpmC1XWamRMAGs-RG5VMJuGZ8nvw');
+// Use the key provided by the user
+define('GEMINI_API_KEY', 'AIzaSyD3OgPdpmC1XWamRMAGs-RG5VMJuGZ8nvw'); 
 define('RAPID_API_KEY', '818924e299msh6f9222b802b50cep111d79jsn0f574a5e5647');
 ?>

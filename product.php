@@ -210,13 +210,8 @@ $dealStrength = max(0, min(100, $dealStrength));
         </div>
         <div class="text-center md:text-right">
             <div class="text-5xl font-bold text-white mb-2 tracking-tight">₹<?= number_format($bestPrice) ?></div>
-            <form method="POST" class="inline-block">
-                <input type="hidden" name="add_watchlist" value="1">
-                <input type="hidden" name="target_price" value="<?= $bestPrice * 0.9 ?>"> <!-- Auto-set 10% lower target -->
-                <button type="submit" class="inline-flex items-center gap-2 bg-gradient-to-r from-neon-cyan to-blue-600 text-white font-bold px-8 py-3 rounded-full hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all">
-                    Track / Buy <i data-lucide="external-link" class="w-4 h-4"></i>
-                </button>
-            </form>
+            <!-- Track/Buy Button Removed as per request -->
+
         </div>
     </header>
 
